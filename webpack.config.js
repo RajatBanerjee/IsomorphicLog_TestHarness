@@ -3,7 +3,7 @@ process.env.BROWSER =true
 module.exports = {
     entry: './application/main.js',
     output: {
-        filename: './public/javasctips/bundle.js'
+        filename: './public/javascripts/bundle.js'
     },plugins: [
      
       new webpack.DefinePlugin({

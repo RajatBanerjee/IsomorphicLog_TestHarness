@@ -76,11 +76,10 @@ var log;
 
 function logger(applicationName) {
     if (true) {
-        log= __webpack_require__(1)({application:applicationName})
+        log = __webpack_require__(1)({ application: applicationName })
+    } else {
+        log = require('./loggers/serverlogger.js')(applicationName);
     }
-    //  else {
-    //     log = require('./loggers/serverlogger.js')(applicationName);
-    // }
 
     //log= require('./loggers/test')()
     return log;
@@ -99,23 +98,67 @@ module.exports = logger;
 
 
 
-  
+
+/** Private  variables*/
+var message = "";
+var application = "";
+var sessionId = "";
+var levels = {
+    info: 'info',
+    warn: 'warn',
+    error: 'error'
+}
+
 module.exports = function logger(options) {
+
     
     /** Public variable */
-    var log = "asd"
-        
-         return log;
+    var log = {
+        init: function (options) {
+            application = typeof (options.application) != "undefined" ? options.application : "Test-Application";
+            sessionId = typeof (options.sessionId) != "undefined" ? options.sessionId : "123456";
+            console.log("init log");
+        },
+        info: function (message) {
+            console.log("log");
+            fireLog(message, levels.info);
+        },
+        warn: function (message) {
+            console.warn("warning");
+            fireLog(message, levels.warn);
+        },
+        error: function (message) {
+            console.error("error");
+            fireLog(message, levels.error);
+        }
+    }
+
+    /**listener on the window for any unhandled exception */
+    window.onerror = function (message, file, line, col, error) {
+        fireLog(error, levels.error);
+    };
+
+    return log;
 }
+
+function fireLog(message, level) {
+         $.post('http://localhost:3001/logger', {
+             message: message,
+             application: application,
+             sessionId: sessionId,
+             level: level
+         }).then(function (response) {
+             console.log(response);
+         })
+ 
+     }
 
 /***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-if(true){
-    var log = __webpack_require__(0)('testharness-application');
-}
-console.log('pew')
+ var log = __webpack_require__(0)('testharness-application');
+     log.info("ola")
 // log.info('we are the champions')
 
 /***/ })
